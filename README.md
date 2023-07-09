@@ -1,1 +1,3 @@
 # Student_Assignment_Management_Software_System-Trees
+
+Synopsis: The Student Assignment Management Software System was developed in 20 days using the C programming language, with a focus on using B-trees as the data structure. The system is designed as a menu-driven program that serves as an interface between students and teachers. Students can form groups of two and upload their assignments. Teachers can use the system to check if all students have submitted a particular assignment, view students' status regarding a specific assignment, evaluate assignments, update marks, and display ordered lists based on marks. Additionally, the system provides features such as range traversal and includes file handling capabilities.
