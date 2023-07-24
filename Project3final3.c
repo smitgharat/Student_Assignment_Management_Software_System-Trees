@@ -81,56 +81,6 @@ AssignmentGroup_BTreeNode* AssignmentGroup_createNode() {
     return newNode;
 }
 
-/*void insert(AssignmentGroup_BTreeNode *root, AssignmentGroup *key) {
-    if(root->numKeys == 2*MAX_GROUP_SIZE - 1) {
-        AssignmentGroup_BTreeNode *newNode = AssignmentGroup_createNode();
-        newNode->isLeaf = 0;
-        newNode->children[0] = root;
-        root = newNode;
-    }
-    if(root->isLeaf == 1) {
-        int i = root->numKeys - 1;
-        while(i >= 0 && root->keys[i]->groupId > key->groupId) {
-            root->keys[i+1] = root->keys[i];
-            i--;
-        }
-        root->keys[i+1] = key;
-        root->numKeys++;
-    }
-    else {
-        int i = root->numKeys - 1;
-        while(i >= 0 && root->keys[i]->groupId > key->groupId) {
-            i--;
-        }
-        i++;
-        if(root->children[i]->numKeys == 2*MAX_GROUP_SIZE - 1) {
-            insert(root->children[i], key);
-        }
-        else {
-            int j = root->children[i]->numKeys - 1;
-            while(j >= 0 && root->children[i]->keys[j]->groupId > key->groupId) {
-                root->children[i]->keys[j+1] = root->children[i]->keys[j];
-                j--;
-            }
-            root->children[i]->keys[j+1] = key;
-            root->children[i]->numKeys++;
-        }
-    }
-}
-
-void traverse(AssignmentGroup_BTreeNode *root) {
-    if(root != NULL) {
-        for(int i = 0; i < root->numKeys; i++) {
-            printf("%d ", root->keys[i]->groupId);
-        }
-        printf("\n");
-        if(root->isLeaf == 0) {
-            for(int i = 0; i < root->numKeys+1; i++) {
-                traverse(root->children[i]);
-            }
-        }
-    }
-}*/
 
 
 void AssignmentGroup_insert_in_node(AssignmentGroup_BTreeNode* node, AssignmentGroup* key, int index) 
@@ -252,33 +202,7 @@ AssignmentGroup* AssignmentGroup_search(AssignmentGroup_BTreeNode* root, int aid
     }
 }
 
-/*void print_assignmentGroup(AssignmentGroup* assignment) 
-{
-    printf("Assignment ID: %d\n", assignment->groupId);
-    printf("Topic: %s\n", assignment->topic);
-    printf("Deadline: %d\n", assignment->deadline);
-    printf("Status: ");
-    switch (assignment->status) 
-    {
-        case declared2:
-            printf("Not started\n");
-            break;
-        case submitted2:
-            printf("In progress\n");
-            break;
-        case evaluated2:
-            printf("Completed\n");
-            break;
-    }
-    printf("Groups: ");
-    AssignmentGroup* group = assignment->groups;
-    while (group != NULL) 
-    {
-        printf("%s ", group->name);
-        group = group->next;
-    }
-    printf("\n");
-}*/
+
 
 void AssignmentGroup_inorder_traversal(AssignmentGroup_BTreeNode* root) 
 {
@@ -476,23 +400,23 @@ Student* student_search_stuid(student_btree* root, int sid)
     int i = 0;
     while (i < root->num_keys && sid > root->keys[i]->student_id) 
     {
-        printf("\n hhhhhh");
+        //printf("\n hhhhhh");
 
         i++;
     }
     if (i < root->num_keys && sid == root->keys[i]->student_id) 
     {
-        printf("\n kkkkkkk");
+        //printf("\n kkkkkkk");
         return root->keys[i];
     }
     else if (root->is_leaf) 
     {
-        printf("\n NULLNULLNULL");
+        //printf("\n NULLNULLNULL");
         return NULL;
     }
     else 
     {
-        printf("\n rrrrrrrrrr");
+        //printf("\n rrrrrrrrrr");
         return student_search_stuid(root->children[i], sid);
     }
 }
@@ -541,161 +465,6 @@ void student_inorder_traversal(student_btree* root)
     }
 }
 
-
-/*void Assignment_insert_into_leaf(Assignment_BTreeNode* leaf, Assignment* assignment) {
-    int i, j;
-    for (i = 0; i < leaf->num_keys; i++) {
-        if (assignment->id < leaf->keys[i]->id) {
-            break;
-        }
-    }
-    for (j = leaf->num_keys; j > i; j--) {
-        leaf->keys[j] = leaf->keys[j-1];
-    }
-    leaf->keys[i] = assignment;
-    leaf->num_keys++;
-}
-
-void Assignment_split_node(Assignment_BTreeNode* parent, int index, Assignment_BTreeNode* child) {
-    Assignment_BTreeNode* new_child = Assignment_create_node();
-    new_child->is_leaf = child->is_leaf;
-    int i;
-    for (i = 0; i < MAX_GROUP_SIZE/2; i++) {
-        new_child->keys[i] = child->keys[i+MAX_GROUP_SIZE/2];
-        new_child->num_keys++;
-    }
-    if (!child->is_leaf) {
-        for (i = 0; i < MAX_GROUP_SIZE/2+1; i++) {
-            new_child->children[i] = child->children[i+MAX_GROUP_SIZE/2];
-            new_child->num_children++;
-        }
-    }
-    child->num_keys = MAX_GROUP_SIZE/2;
-    for (i = parent->num_keys; i > index; i--) {
-        parent->children[i+1] = parent->children[i];
-    }
-    parent->children[index+1] = new_child;
-    for (i = parent->num_keys; i > index; i--) {
-        parent->keys[i] = parent->keys[i-1];
-    }
-    parent->keys[index] = new_child->keys[0];
-    parent->num_keys++;
-}
-
-void Assignment_insert_into_node(Assignment_BTreeNode* node, Assignment* assignment) {
-    int i, j;
-    for (i = 0; i < node->num_keys; i++) {
-        if (assignment->id < node->keys[i]->id) {
-            break;
-        }
-    }
-    if (!node->is_leaf) {
-        if (assignment->id > node->keys[i-1]->id && i < node->num_keys) {
-            i++;
-        }
-        Assignment_insert_into_node(node->children[i], assignment);
-        if (node->children[i]->num_keys > MAX_GROUP_SIZE) {
-            Assignment_split_node(node, i, node->children[i]);
-        }
-    } else {
-        Assignment_insert_into_leaf(node, assignment);
-        if (node->num_keys > MAX_GROUP_SIZE) {
-            Assignment_split_node(NULL, i, node);
-        }
-    }
-}
-void Assignment_insert(Assignment_BTreeNode** root, Assignment* assignment) 
-{
-    if (*root == NULL) 
-    {
-        printf("\nqaz1");
-        *root = Assignment_create_node();
-        Assignment_insert_into_leaf(*root, assignment);
-    } 
-    else 
-    {
-        printf("\nqaz2");
-        Assignment_insert_into_node(*root, assignment);
-        printf("\nqaz3");
-        if ((*root)->num_keys > MAX_GROUP_SIZE) 
-        {
-            printf("\nqaz4");
-            Assignment_BTreeNode* new_root = Assignment_create_node();
-            printf("\nqaz5");
-            new_root->is_leaf = 0;
-            new_root->children[0] = *root;
-            Assignment_split_node(new_root, 0, *root);
-            printf("\nqaz6");
-            *root = new_root;
-        }
-    }
-}
-
-Assignment* Assignment_search(Assignment_BTreeNode* root, int id) 
-{
-    int i = 0;
-    while (i < root->num_keys && id > root->keys[i]->id) 
-    {
-        i++;
-    }
-    if (i < root->num_keys && id == root->keys[i]->id) 
-    {
-        return root->keys[i];
-    }
-    if (root->is_leaf) 
-    {
-        return NULL;
-    } 
-    else 
-    {
-        return Assignment_search(root->children[i], id);
-    }
-}
-
-void print_assignment(Assignment* assignment) 
-{
-    printf("Assignment ID: %d\n", assignment->id);
-    printf("Topic: %s\n", assignment->topic);
-    printf("Deadline: %d\n", assignment->deadline);
-    printf("Status: ");
-    switch (assignment->status) 
-    {
-        case declared2:
-            printf("Not started\n");
-            break;
-        case submitted2:
-            printf("In progress\n");
-            break;
-        case COMPLETED:
-            printf("Completed\n");
-            break;
-    }
-    printf("Groups: ");
-    AssignmentGroup* group = assignment->groups;
-    while (group != NULL) 
-    {
-        printf("%s ", group->name);
-        group = group->next;
-    }
-    printf("\n");
-}
-
-void Assignment_print_tree(Assignment_BTreeNode* root) 
-{
-    if (root != NULL) 
-    {
-        int i;
-        for (i = 0; i < root->num_keys; i++) 
-        {
-            Assignment_print_tree(root->children[i]);
-            print_assignment(root->keys[i]);
-        }
-        Assignment_print_tree(root->children[i]);
-    }
-    else{
-        printf("\nqwer");
-    }
-}*/
 
 
 
@@ -885,33 +654,6 @@ void Assignment_inorder_traversal(Assignment_BTreeNode* root)
     }
 }
 
-// void Q3(Assignment_BTreeNode* node) {
-//     if (node == NULL) {
-//         return;
-//     }
-//     int i;
-//     for (i = 0; i < node->num_keys; i++) {
-//         Assignment* assignment = node->keys[i];
-//         if (assignment->status == submitted2) {
-//             int j;
-//             for (j = 0; j < MAX_GROUP_SIZE - 1; j++) {
-//                 AssignmentGroup* group = assignment->groups[j];
-//                 if (group == NULL) {
-//                     break;
-//                 }
-//                 if (group->asgpstatus == submitted2) {
-//                     printf("Student Group %d and %d submitted the assignment '%s', but it has not been evaluated yet.\n", group->studentId1, group->studentId2, assignment->topic);
-//                 }
-//             }
-//         }
-//         if (!node->is_leaf) {
-//             Q3(node->children[i]);
-//         }
-//     }
-//     if (!node->is_leaf) {
-//         Q3(node->children[i]);
-//     }
-// }
 //////////////////Q3////////////////////////////////////
 void submit_assignment(Student* student) 
 {
@@ -1083,82 +825,6 @@ void print_overdue_assignments(AssignmentGroup_BTreeNode* root, student_btree* p
     }
 }
 
-
-/*void findStudentGroups(AssignmentGroup_BTreeNode* root, AssignmentGroup* assignmentGroup, AssignmentGroup** studentGroups, int* numStudentGroups) 
-{
-    if (root != NULL) 
-    {
-        for (int i = 0; i < root->numKeys; i++) 
-        {
-            AssignmentGroup* curr = root->keys[i];
-            if (curr->groupId == assignmentGroup->groupId) 
-            {
-                studentGroups[(*numStudentGroups)++] = curr;
-            }
-            findStudentGroups(root->children[i], assignmentGroup, studentGroups, numStudentGroups);
-        }
-        findStudentGroups(root->children[root->numKeys], assignmentGroup, studentGroups, numStudentGroups);
-    }
-}*/
-
-/*void print_student_groups_by_marks(AssignmentGroup_BTreeNode* root, int assignmentId) 
-{
-    AssignmentGroup* assignmentGroup = findAssignmentGroup(root, assignmentId);
-    if (assignmentGroup == NULL) 
-    {
-        printf("Assignment group not found.\n");
-        return;
-    }
-
-    // Traverse the B-tree to find all student-groups belonging to the assignment.
-    AssignmentGroup** studentGroups = (AssignmentGroup**) malloc(sizeof(AssignmentGroup*) * MAX_GROUP_SIZE);
-    int numStudentGroups = 0;
-    findStudentGroups(root, assignmentGroup, studentGroups, &numStudentGroups);
-
-    // Sort the student-groups by marks in descending order.
-    qsort(studentGroups, numStudentGroups, sizeof(AssignmentGroup*), compareByMarks);
-
-    // Print the details of each student-group.
-    printf("Details of student-groups for assignment ID %d:\n", assignmentId);
-    for (int i = 0; i < numStudentGroups; i++) 
-    {
-        AssignmentGroup* studentGroup = studentGroups[i];
-        printf("Group ID: %d\n", studentGroup->groupId);
-        printf("Student 1 ID: %d\n", studentGroup->studentId1);
-        printf("Student 2 ID: %d\n", studentGroup->studentId2);
-        printf("Marks: %d\n\n", studentGroup->marks);
-    }
-
-    free(studentGroups);
-}*/
-
-// Helper function to compare two assignment groups by marks.
-int compareByMarks(const void* a, const void* b) 
-{
-    AssignmentGroup* ag1 = *(AssignmentGroup**) a;
-    AssignmentGroup* ag2 = *(AssignmentGroup**) b;
-    return ag2->marks - ag1->marks;
-}
-
-// Helper function to traverse the B-tree and find all student-groups belonging to a given assignment.
-
-
-// Helper function to find an assignment group by assignment ID.
-/*AssignmentGroup* findAssignmentGroup(AssignmentGroup_BTreeNode* root, int assignmentId) 
-{
-    if (root == NULL) 
-    {
-        return NULL;
-    }
-
-    int i = 0;
-    while (i < root->numKeys && assignmentId > root->keys[i]->groupId) 
-    {
-        i++;
-    }
-
-    if (i < root->numKeys && assignmentId == root->keys[i]->groupId) 
-    {*/
 
 Student* qsp6(student_btree* root,Assignment* aq) 
 {
@@ -1499,203 +1165,9 @@ void print_menu()
     printf("0. Exit\n");
 }
 
-/*void print_menu()
-{
-    printf("Menu:\n");
-    printf("1. Insert a student record & Group id\n");
-    printf("2. Insert assignment record\n");
-    printf("3. Submit assignment\n");
-    printf("4. Print declared but not evaluated assignments\n");
-    printf("5. Print list of student groups who have not submitted the assignment even if due date is over\n");
-    printf("6. Print submitted but not evaluated assignments\n");
-    printf("7. Change Assignment Status\n");
-    printf("3. Submit assignment\n");
-    printf("3. Submit assignment\n");
-    printf("3. Submit assignment\n");
-    printf("3. Submit assignment\n");
-    printf("0. Exit\n");
-}*/
-
-
 int main()  
 {
-    /*
-    time_t  10  = time(NULL);
-    student_btree* root = NULL;
-    Student* s1 = (Student*) malloc(sizeof(Student));
-    s1->student_id = 1;
-    strcpy(s1->name, "Alice");
-    s1->group_partner = NULL;
-    s1->group_id = 1;
-    strcpy(s1->assignment_name, "Assignment 1");
-    s1->deadline =  10 +3600;
-    s1->stustatus = not_submitted1;
-    s1->evaluation_marks = -1;
-    s1->viva_marks = -1;
-    root = student_insert(root, s1);
-    Student* s2 = (Student*) malloc(sizeof(Student));
-    s2->student_id = 2;
-    strcpy(s2->name, "Bob");
-    s2->group_partner = NULL;
-    s2->group_id = 1;
-    s2->group_id = 2;
-    strcpy(s2->assignment_name, "Assignment 1");
-    s2->deadline =  10 +3600;
-    s2->stustatus = not_submitted1;
-    s2->evaluation_marks = -1;
-    s2->viva_marks = -1;
-    root = student_insert(root, s2);
-    Student* s3 = (Student*) malloc(sizeof(Student));
-    s3->student_id = 3;
-    strcpy(s3->name, "Charlie");
-    s3->group_partner = NULL;
-    s3->group_id = 2;
-    strcpy(s3->assignment_name, "Assignment 1");
-    s3->deadline =  10 +3600;
-    s3->stustatus = not_submitted1;
-    s3->evaluation_marks = -1;
-    s3->viva_marks = -1;
-    root = student_insert(root, s3);
-    Student* s4 = (Student*) malloc(sizeof(Student));
-    s4->student_id = 4;
-    strcpy(s4->name, "David");
-    s4->group_partner = NULL;
-    s4->group_id = 2;
-    strcpy(s4->assignment_name, "Assignment 1");
-    s4->deadline =  10 +3600;
-    s4->stustatus = not_submitted1;
-    s4->evaluation_marks = -1;
-    s4->viva_marks = -1;
-    root = student_insert(root, s4);
-    Student* s5 = (Student*) malloc(sizeof(Student));
-    /*s5->student_id = 5;
-    strcpy(s5->name, "Emily");
-    s5->group_partner = NULL;
-    s5->group_id = 3;
-    strcpy(s5->assignment_name, "Assignment 1");
-    s5->deadline =  10 +3600;
-    s5->stustatus = not_submitted1;
-    s5->evaluation_marks = -1;
-    s5->viva_marks = -1;
-    root = student_insert(root, s5);
-    student_inorder_traversal(root);
-    Student* search_result = student_search_groupid(root, 2);
-    printf("Search result:\n");
-    if (search_result) {
-        print_student(search_result);
-    }
-    else {
-        printf("No matching group found.\n");
-    }
-
-    printf("Assignmentppppppppppp\n");
-    Assignment_BTreeNode* a_root = NULL;
-    Assignment *a1=(Assignment*) malloc(sizeof(Assignment));
-    a1->id=1;
-    a1->deadline= 10 +3600;
-    strcpy(a1->topic,"Data Structures");
-    a1->status=declared2;
-    a1->groups=NULL;
-    a1->left=NULL;
-    a1->right=NULL;
-    a_root=Assignment_insert(a_root, a1);
-    Assignment *a2=(Assignment*) malloc(sizeof(Assignment));
-    a2->id=2;
-    a2->deadline= 10 +3600;
-    strcpy(a2->topic,"Algorithms");
-    a2->status=declared2;
-    a2->groups=NULL;
-    a2->left=NULL;
-    a2->right=NULL;
-    a_root=Assignment_insert(a_root, a2);
-    Assignment *a3=(Assignment*) malloc(sizeof(Assignment));
-    a3->id=3;
-    a3->deadline= 10 +3600;
-    strcpy(a3->topic,"Database Systems");
-    a3->status=declared2;
-    a3->groups=NULL;
-    a3->left=NULL;
-    a3->right=NULL;
-    a_root=Assignment_insert(a_root, a3);
-    Assignment *a4=(Assignment*) malloc(sizeof(Assignment));
-    a4->id=3;
-    a4->deadline= 10 +3600;
-    strcpy(a4->topic,"Operating Systems");
-    a4->status=declared2;
-    a4->groups=NULL;
-    a4->left=NULL;
-    a4->right=NULL;
-    a_root=Assignment_insert(a_root, a4);
-    Assignment *a5=(Assignment*) malloc(sizeof(Assignment));
-    a5->id=3;
-    a5->deadline= 10 +3600;
-    strcpy(a5->topic,"Computer Networks");
-    a5->status=declared2;
-    a5->groups=NULL;
-    a5->left=NULL;
-    a5->right=NULL;
-    a_root=Assignment_insert(a_root, a5);
     
-    printf("\n \n\nassignments\n\n\n");
-    Assignment_inorder_traversal(a_root);
-    Assignment* found = Assignment_search(a_root, 3);
-    if (found != NULL) 
-    {
-        printf("Found assignment with ID 3:\n");
-        print_assignment(found);
-    } 
-    else 
-    {
-        printf("Assignment with ID 3 not found.\n");
-    }
-
-
-
-
-    AssignmentGroup_BTreeNode *agroot = AssignmentGroup_createNode();
-
-    /*AssignmentGroup *ag1 = (AssignmentGroup*)malloc(sizeof(AssignmentGroup));
-    ag1->groupId = 1;
-    ag1->studentId1 = 1;
-    ag1->studentId2 = 2;
-    ag1->asgpstatus = declared3;
-    ag1->marks = 80;
-    agroot=AssignmentGroup_insert(agroot, ag1);
-
-    AssignmentGroup *ag2 = (AssignmentGroup*)malloc(sizeof(AssignmentGroup));
-    ag2->groupId = 2;
-    ag2->studentId1 = 3;
-    ag2->studentId2 = 4;
-    ag2->asgpstatus = declared3;
-    ag2->marks = 85;
-    agroot=AssignmentGroup_insert(agroot, ag2);*/
-
-    /*AssignmentGroup *ag3 = (AssignmentGroup*)malloc(sizeof(AssignmentGroup));
-    ag3->groupId = 3;
-    ag3->studentId1 = 5;
-    ag3->studentId2 = 6;
-    ag3->asgpstatus = declared3;
-    ag3->marks = 90;
-    agroot=AssignmentGroup_insert(agroot, ag3);
-
-//printAssignmentGroupDetails(ag1);
-printf("\nppppppppppppppppp");
-    AssignmentGroup_inorder_traversal(agroot);
-    printf("\nppppppppppppppppp");
-    AssignmentGroup* agfound = AssignmentGroup_search(agroot, 3);
-    printf("\nppppppppppppppppp");
-    if (agfound != NULL) 
-    {
-        printf("Found assignment with ID 3:\n");
-        printAssignmentGroupDetails(agfound);
-    } 
-    else 
-    {
-        printf("Assignment with ID 3 not found.\n");
-    }*/
-    
-
-    //#include <stdio.h>
 
     FILE* fstu;
     fstu = fopen("student.txt","r");
@@ -1922,17 +1394,13 @@ printf("\nppppppppppppppppp");
                 printf("\n viva marks for student id %d: ",submitStudent5->student_id);
                 scanf("%d",&m3);
                 viva_student(submitStudent5,m3);
-                printf("\nr1");
                 Assignment* asgn1 = Assignment_search_group(a_root,groupId);
-                printf("\nr2");
                 //evaluate_assignment(asgn1);
                 //if(asgn1->status != evaluated3)
                 //{
                 //    evaluate_assignment(asgn1);
                 //}
-                printf("\nr3");
                 Student* submitStudent6 = student_search_stuid(root, submitStudent3->group_partner->student_id);
-                printf("\nr4");
                 printf("\n viva marks for student id %d: ",submitStudent6->student_id);
                 scanf("%d",&m4);
                 viva_student(submitStudent4,m4);
@@ -1950,7 +1418,6 @@ printf("\nppppppppppppppppp");
                 printf("Enter group id,studentId1,studentId2: ");
                 scanf("%d%d%d", &groupId,&studentId1,&studentId2);
                 Student* submitStudenAssignmentStatus = student_search_stuid(root, studentId1);
-                printf("\nppppppppp\n");
                 if(submitStudenAssignmentStatus==NULL)
                 {
                     printf("\n error1");
@@ -1964,8 +1431,6 @@ printf("\nppppppppppppppppp");
                 submitStudent2->group_id=groupId;
                 submitStudenAssignmentStatus->group_partner=submitStudent2;
                 submitStudent2->group_partner=submitStudenAssignmentStatus;
-
-                //student_inorder_traversal(root);
                 break;
             case 15:
                 
@@ -1980,149 +1445,5 @@ printf("\nppppppppppppppppp");
                 printf("Invalid choice, please try again.\n");
         }
     } while (choice != 0);
-
-    /*printf("\n q4:\n");
-    Q4(root,agroot);*/
-
-
-    /*printf("\n q3: \n");
-    int rno,assno;
-    printf("\n enter student id and assno: ");
-    scanf("%d%d",&rno,&assno);
-    Student* st=student_search_stuid(root,rno);
-    Assignment* as=Assignment_search(a_root,assno);
-    AssignmentGroup* asgrp=AssignmentGroup_search(agroot,st->group_id);
-    if(st==NULL||as==NULL||asgrp==NULL)
-    {
-        printf("\n failure to open");
-    }
-    submit_assignment(st);
-    change_assignment_status(as, submitted2);
-    change_student_assignment_status(st, submitted1, -1);
-    change_assignment_group_status(asgrp,declared2,-1);*/
-
-    /*         //grouping
-    
-    
-    
-    
-    int groupId,studentId1,studentId2;
-    printf("Enter group id,studentId1,studentId2: ");
-    scanf("%d%d%d", &groupId,&studentId1,&studentId2);
-    Student* submitStudenAssignmentStatus = student_search_stuid(root, studentId1);
-    
-    submitStudenAssignmentStatus->group_id=groupId;
-    Student* submitStudent2 = student_search_stuid(root, studentId2);
-    submitStudent2->group_id=groupId;
-    submitStudenAssignmentStatus->group_partner=submitStudent2;
-    submitStudent2->group_partner=submitStudenAssignmentStatus;
-
-    student_inorder_traversal(root);*/
-
-/*                                    assigning assignment
-
-
-    int groupId,ano;
-    printf("\n enter group id: ");
-    scanf("%d",&groupId);
-    printf("\n enter assignment number to be assigned: ");
-    scanf("%d",&ano);
-    Student* submitStudent7 = student_search_groupid(root, groupId);
-    Student* submitStudent8 = student_search_stuid(root, submitStudent7->group_partner->student_id);        
-    Assignment* current1 = Assignment_search(a_root,ano);
-
-    strcpy(submitStudent7->assignment_name,current1->topic);
-            
-    strcpy(submitStudent8->assignment_name,current1->topic);
-    
-
-    AssignmentGroup *agt = (AssignmentGroup*)malloc(sizeof(AssignmentGroup));
-    agt->groupId = groupId;
-    agt->studentId1 = submitStudent7->student_id;
-    agt->studentId2 = submitStudent8->student_id;
-    agt->asgpstatus = declared2;
-    agt->marks = -1;
-    agroot=AssignmentGroup_insert(agroot, agt);
-    current1->groups=AssignmentGroup_insert(current1->groups, agt);
-    //insert_assignment_group(&current1->groups, groupId, submitStudent7->student_id, submitStudent8->student_id);
-    //insert_assignment_group(&assignmentgrouplist, groupId, submitStudent7->student_id, submitStudent8->student_id);
-    */
-/*
-   //evaluated marks
-   int groupId,m1=0,m2=0,m3=0,m4=0;
-    printf("\n enter group id: ");
-            scanf("%d",&groupId);
-                Student* submitStudent3 = student_search_groupid(root, groupId);
-                if(submitStudent3==NULL)
-                {
-                    printf("\n failed");
-                }
-                printf("\n evaluated marks for student id %d: ",submitStudent3->student_id);
-                scanf("%d",&m1);
-                evaluate_student(submitStudent3,m1);
-                Assignment* asgn = Assignment_search_group(a_root,groupId);
-                if(asgn==NULL)
-                {
-                    printf("\n failed");
-                }
-                if(asgn->status != evaluated2)
-                {
-                    evaluate_assignment(asgn);
-                }
-                Student* submitStudent4 = student_search_stuid(root, submitStudent3->group_partner->student_id);
-                printf("\n evaluated marks for student id %d: ",submitStudent4->student_id);
-                scanf("%d",&m2);
-                
-                evaluate_student(submitStudent4,m2);
-                
-                AssignmentGroup* asgp1 = AssignmentGroup_search(agroot,groupId);
-                //AssignmentGroup* asgp8 = find_assignment_group_structure(assignmentList->groups,groupId);
-                Assignment* asgp8 = Assignment_search_group(a_root,groupId);
-                evaluate_assignment_group(asgp1,&asgn,m1+m2+m3+m4,groupId);
-                evaluate_assignment_group(asgp8->groups,&asgn,m1+m2+m3+m4,groupId);
-                //print_students(studentList) ;
-                //print_assignments(assignmentList);
-                //print_assignment_groups(assignmentgrouplist);
-                change_assignment_status(asgn, evaluated3);
-
-
-            ///viva
-
-    printf("\n enter group id: ");
-                scanf("%d",&groupId);
-                Student* submitStudent5 = student_search_groupid(root, groupId);
-                printf("\n viva marks for student id %d: ",submitStudent5->student_id);
-                scanf("%d",&m3);
-                viva_student(submitStudent5,m3);
-                printf("\nr1");
-                Assignment* asgn1 = Assignment_search_group(a_root,groupId);
-                printf("\nr2");
-                //evaluate_assignment(asgn1);
-                //if(asgn1->status != evaluated3)
-                //{
-                //    evaluate_assignment(asgn1);
-                //}
-                printf("\nr3");
-                Student* submitStudent6 = student_search_stuid(root, submitStudent3->group_partner->student_id);
-                printf("\nr4");
-                printf("\n viva marks for student id %d: ",submitStudent6->student_id);
-                scanf("%d",&m4);
-                viva_student(submitStudent4,m4);
-                AssignmentGroup* asgp2 = AssignmentGroup_search(agroot,groupId);
-                //AssignmentGroup* asgp8 = find_assignment_group_structure(assignmentList->groups,groupId);
-                Assignment* asgp9 = Assignment_search_group(a_root,groupId);
-                m1=submitStudent5->evaluation_marks;
-                m2=submitStudent6->evaluation_marks;
-                //AssignmentGroup* asgp9 = find_assignment_group_structure(assignmentList->groups,groupId);
-                evaluate_assignment_group(asgp2,&asgn1,m1+m2+m3+m4,groupId);
-                evaluate_assignment_group(asgp9,&asgn,m1+m2+m3+m4,groupId);
-
-*/
-
-
-
     return 0;
-
-
-
 }
