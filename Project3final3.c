@@ -1153,15 +1153,15 @@ void print_menu()
     printf("4. Print Unsubmitted Assignments\n");
     printf("5. Print Overdue Assignments\n");
     printf("6. Print Pending Evaluations\n");
-    printf("7. Print Student Groups by Marks\n");
-    printf("8. Print Top Scorers\n");
-    printf("9. Change Deadline\n");
-    printf("10. Assign Assignment to a group\n");
-    printf("11. Print ALL details:\n");
-    printf("12, Evaluate assignment:\n");
-    printf("13. Add Viva marks:\n");
-    printf("14. Make student group\n");
-    printf("15. Range traversal\n");
+    //printf("7. Print Student Groups by Marks\n");
+    printf("7. Print Top Scorers\n");
+    printf("8. Change Deadline\n");
+    printf("9. Assign Assignment to a group\n");
+    printf("10. Print ALL details:\n");
+    printf("11, Evaluate assignment:\n");
+    printf("12. Add Viva marks:\n");
+    printf("13. Make student group\n");
+    printf("14. Range traversal\n");
     printf("0. Exit\n");
 }
 
@@ -1294,18 +1294,12 @@ int main()
                 qs6(a_root,root);
                 break;
             case 7:
-                
-                printf("\n enter assignment id: ");
-                scanf("%d",&assignmentId);
-                //print_student_groups_by_marks(root, assignmentId);
-                break;
-            case 8:
                 // Print Top Scorers
                 //print_top_groupssp(agroot,root,aid,ag,top_marks);
                 ///////////////print_top_groups(a_root, root);
                 print_student_groups_top_marks(a_root,root);
                 break;
-            case 9:
+            case 8:
                 // Change Deadline
                 printf("\n enter assignment no: ");
                 scanf("%d",&ano);
@@ -1322,7 +1316,7 @@ int main()
 
                 //change_deadline(a_root, root, agroot);
                 break;
-            case 10:
+            case 9:
                 //
                 printf("\n enter group id: ");
                 scanf("%d",&groupId);
@@ -1343,13 +1337,13 @@ int main()
                 agroot=AssignmentGroup_insert(agroot, agt);
                 //current1->groups=AssignmentGroup_insert(a_root->keys[]->groups, agt);
                 break;
-            case 11:
+            case 10:
                 // Print All Details
                 student_inorder_traversal(root);
                 Assignment_inorder_traversal(a_root);
                 AssignmentGroup_inorder_traversal(agroot);
                 break;
-            case 12:
+            case 11:
                 //evaluated marks
                 
                 printf("\n enter group id: ");
@@ -1387,7 +1381,7 @@ int main()
                 //print_assignment_groups(assignmentgrouplist);
                 change_assignment_status(asgn, evaluated3);
                 break;
-            case 13:
+            case 12:
                 printf("\n enter group id: ");
                 scanf("%d",&groupId);
                 Student* submitStudent5 = student_search_groupid(root, groupId);
@@ -1413,7 +1407,7 @@ int main()
                 evaluate_assignment_group(asgp2,&asgn1,m1+m2+m3+m4,groupId);
                 evaluate_assignment_group(asgp9->groups,&asgn1,m1+m2+m3+m4,groupId);
                 break;
-            case 14:
+            case 13:
                 
                 printf("Enter group id,studentId1,studentId2: ");
                 scanf("%d%d%d", &groupId,&studentId1,&studentId2);
@@ -1432,7 +1426,7 @@ int main()
                 submitStudenAssignmentStatus->group_partner=submitStudent2;
                 submitStudent2->group_partner=submitStudenAssignmentStatus;
                 break;
-            case 15:
+            case 14:
                 
                 printf("\n enter range of assignment ids:");
                 scanf("%d%d",&st1,&ed);
